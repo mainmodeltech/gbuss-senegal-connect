@@ -9,7 +9,7 @@ import { Input } from "@/components/ui/input";
 import { Textarea } from "@/components/ui/textarea";
 import { Checkbox } from "@/components/ui/checkbox";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
-import { CheckCircle, PrayingHands, Calendar } from "lucide-react";
+import { CheckCircle, HeartHandshake, Calendar } from "lucide-react";
 import { useToast } from "@/hooks/use-toast";
 
 const PrierAvecNous = () => {
@@ -317,7 +317,7 @@ const PrierAvecNous = () => {
                 <Card>
                   <CardHeader>
                     <CardTitle className="flex items-center gap-2">
-                      <PrayingHands className="h-5 w-5 text-gbuss-blue" />
+                      <HeartHandshake className="h-5 w-5 text-gbuss-blue" />
                       <span>Pourquoi s'engager?</span>
                     </CardTitle>
                   </CardHeader>
