@@ -9,9 +9,9 @@ const Index = () => {
   return (
     <Layout>
       {/* Hero Section */}
-      <section className="relative h-screen flex items-center bg-[url('/placeholder.svg')] bg-cover bg-center">
-        {/* Overlay */}
-        <div className="absolute inset-0 bg-gbuss-blue/80"></div>
+      <section className="relative h-screen flex items-center bg-hero-pattern bg-cover bg-center">
+        {/* Overlay with reduced opacity for better readability */}
+        <div className="absolute inset-0 bg-gbuss-blue/60"></div>
         
         <div className="container mx-auto px-4 relative z-10 text-center">
           <h1 className="text-4xl md:text-5xl lg:text-6xl font-bold text-white mb-6 animate-fade-up">

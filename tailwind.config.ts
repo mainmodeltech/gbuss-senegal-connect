@@ -1,4 +1,3 @@
-
 import type { Config } from "tailwindcss";
 
 export default {
@@ -114,7 +113,7 @@ export default {
         body: ['Open Sans', 'sans-serif']
       },
       backgroundImage: {
-        'hero-pattern': "linear-gradient(rgba(26, 54, 93, 0.7), rgba(26, 54, 93, 0.7)), url('/hero-bg.jpg')"
+        'hero-pattern': "linear-gradient(rgba(26, 54, 93, 0.6), rgba(26, 54, 93, 0.6)), url('/hero-bg.jpg')"
       }
 		}
 	},
