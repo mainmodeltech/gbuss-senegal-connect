@@ -1,3 +1,4 @@
+
 import { useState, useEffect } from "react";
 import { Link, useLocation } from "react-router-dom";
 import { Menu, X, ChevronDown } from "lucide-react";
@@ -7,7 +8,7 @@ import { cn } from "@/lib/utils";
 // Logo component
 const Logo = () => (
   <Link to="/" className="flex items-center gap-2">
-    <img src="/logo-gbuss.png" alt="GBUSS Logo" className="h-10" />
+    <img src="/logo-gbuss.png" alt="GBUSS Logo" className="h-10 w-auto" />
     <div className="font-heading font-bold text-xl text-gbuss-blue hidden md:block">
       GBUSS
     </div>

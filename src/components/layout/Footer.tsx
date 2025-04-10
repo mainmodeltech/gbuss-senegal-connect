@@ -1,4 +1,3 @@
-
 import { Link } from "react-router-dom";
 import { Facebook, Twitter, Instagram, Mail, Phone, MapPin } from "lucide-react";
 
@@ -12,7 +11,7 @@ const Footer = () => {
           {/* About */}
           <div>
             <div className="flex items-center gap-2 mb-4">
-              <img src="/logo-gbuss.png" alt="GBUSS Logo" className="h-12" />
+              <img src="/logo-gbuss.png" alt="GBUSS Logo" className="h-12 w-auto object-contain" />
               <h3 className="font-heading font-bold text-xl">GBUSS</h3>
             </div>
             <p className="text-gray-300 mb-4">
