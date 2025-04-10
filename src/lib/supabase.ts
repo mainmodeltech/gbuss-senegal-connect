@@ -1,4 +1,3 @@
-
 import { createClient } from '@supabase/supabase-js';
 
 // Initialize the Supabase client
@@ -131,6 +130,19 @@ export type SiteSetting = {
   value: string;
   data_type: 'text' | 'boolean' | 'number' | 'json' | 'image';
   description?: string;
+  created_at: string;
+  updated_at: string;
+};
+
+export type MediaLibraryItem = {
+  id: number;
+  file_name: string;
+  file_path: string;
+  file_type: string;
+  file_size: number;
+  alt_text?: string;
+  description?: string;
+  uploaded_by?: string;
   created_at: string;
   updated_at: string;
 };
