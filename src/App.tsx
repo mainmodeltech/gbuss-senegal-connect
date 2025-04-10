@@ -13,8 +13,16 @@ import FaireUnDon from "./pages/FaireUnDon";
 import PrierAvecNous from "./pages/PrierAvecNous";
 import Contact from "./pages/Contact";
 import NotFound from "./pages/NotFound";
+import MediaLibrary from "./pages/MediaLibrary";
 
-const queryClient = new QueryClient();
+const queryClient = new QueryClient({
+  defaultOptions: {
+    queries: {
+      staleTime: 1000 * 60 * 5, // 5 minutes
+      retry: 1,
+    },
+  },
+});
 
 const App = () => (
   <QueryClientProvider client={queryClient}>
@@ -31,6 +39,7 @@ const App = () => (
           <Route path="/faire-un-don" element={<FaireUnDon />} />
           <Route path="/prier-avec-nous" element={<PrierAvecNous />} />
           <Route path="/contact" element={<Contact />} />
+          <Route path="/media-library" element={<MediaLibrary />} />
           <Route path="*" element={<NotFound />} />
         </Routes>
       </BrowserRouter>

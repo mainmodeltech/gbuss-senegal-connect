@@ -1,10 +1,24 @@
+
 import { Link } from "react-router-dom";
-import { ArrowRight, Book, Users, Heart, Calendar } from "lucide-react";
+import { ArrowRight, Book, Users, Heart, Calendar, Loader2 } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { Card, CardContent } from "@/components/ui/card";
 import Layout from "@/components/layout/Layout";
+import { useQuery } from "@tanstack/react-query";
+import { getFeaturedTestimonials, getStatistics } from "@/services/api";
+
 const Index = () => {
-  return <Layout>
+  // Fetch featured testimonials
+  const { 
+    data: testimonials, 
+    isLoading: isTestimonialsLoading 
+  } = useQuery({
+    queryKey: ['featuredTestimonials'],
+    queryFn: () => getFeaturedTestimonials(3)
+  });
+
+  return (
+    <Layout>
       {/* Hero Section */}
       <section className="relative h-screen flex items-center bg-hero-pattern bg-cover bg-center">
         {/* Overlay with gradient using logo colors */}
@@ -91,11 +105,23 @@ const Index = () => {
             </p>
           </div>
 
-          <div className="grid grid-cols-1 md:grid-cols-3 gap-8 max-w-5xl mx-auto">
-            <TestimonialCard quote="Le GBUSS m'a aidé à grandir spirituellement pendant mes études. J'ai trouvé une famille spirituelle loin de chez moi." name="Marie D." role="Étudiante en médecine" />
-            <TestimonialCard quote="Les études de la Bible au sein du GBUSS ont révolutionné ma compréhension des Écritures et m'ont aidé à vivre ma foi." name="Thomas S." role="Ancien étudiant" />
-            <TestimonialCard quote="Grâce au GBUSS, j'ai appris à partager ma foi avec mes camarades de classe avec confiance et respect." name="Sophie M." role="Lycéenne" />
-          </div>
+          {isTestimonialsLoading ? (
+            <div className="flex justify-center py-10">
+              <Loader2 className="h-10 w-10 animate-spin text-gbuss-blue" />
+            </div>
+          ) : (
+            <div className="grid grid-cols-1 md:grid-cols-3 gap-8 max-w-5xl mx-auto">
+              {testimonials?.map(testimonial => (
+                <TestimonialCard 
+                  key={testimonial.id}
+                  quote={testimonial.quote}
+                  name={testimonial.name}
+                  role={testimonial.role}
+                  imageUrl={testimonial.image_url}
+                />
+              ))}
+            </div>
+          )}
 
           <div className="text-center mt-12">
             <Link to="/temoignages">
@@ -107,7 +133,8 @@ const Index = () => {
           </div>
         </div>
       </section>
-    </Layout>;
+    </Layout>
+  );
 };
 
 // Feature Card Component
@@ -140,19 +167,29 @@ const FeatureCard = ({
 const TestimonialCard = ({
   quote,
   name,
-  role
+  role,
+  imageUrl
 }: {
   quote: string;
   name: string;
   role: string;
+  imageUrl?: string;
 }) => {
   return <div className="bg-white p-6 rounded-lg shadow-md">
       <div className="text-gbuss-blue text-4xl font-serif mb-4">"</div>
       <p className="italic text-gray-700 mb-6">{quote}</p>
-      <div>
-        <p className="font-semibold">{name}</p>
-        <p className="text-sm text-gbuss-gray">{role}</p>
+      <div className="flex items-center">
+        {imageUrl && (
+          <div className="w-10 h-10 rounded-full overflow-hidden mr-3">
+            <img src={imageUrl} alt={name} className="w-full h-full object-cover" />
+          </div>
+        )}
+        <div>
+          <p className="font-semibold">{name}</p>
+          <p className="text-sm text-gbuss-gray">{role}</p>
+        </div>
       </div>
     </div>;
 };
+
 export default Index;
