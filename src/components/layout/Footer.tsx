@@ -11,18 +11,21 @@ const Footer = () => {
         <div className="grid grid-cols-1 md:grid-cols-3 gap-8">
           {/* About */}
           <div>
-            <h3 className="font-heading font-bold text-xl mb-4">GBUSS</h3>
+            <div className="flex items-center gap-2 mb-4">
+              <img src="/logo-gbuss.png" alt="GBUSS Logo" className="h-12" />
+              <h3 className="font-heading font-bold text-xl">GBUSS</h3>
+            </div>
             <p className="text-gray-300 mb-4">
               Le Groupe Biblique Universitaire et Scolaire du Sénégal. Ensemble pour témoigner de Jésus-Christ dans l'environnement académique.
             </p>
             <div className="flex space-x-4 mt-4">
-              <a href="#" aria-label="Facebook" className="text-white hover:text-gbuss-gold">
+              <a href="#" aria-label="Facebook" className="text-white hover:text-gbuss-purple">
                 <Facebook size={20} />
               </a>
-              <a href="#" aria-label="Twitter" className="text-white hover:text-gbuss-gold">
+              <a href="#" aria-label="Twitter" className="text-white hover:text-gbuss-purple">
                 <Twitter size={20} />
               </a>
-              <a href="#" aria-label="Instagram" className="text-white hover:text-gbuss-gold">
+              <a href="#" aria-label="Instagram" className="text-white hover:text-gbuss-purple">
                 <Instagram size={20} />
               </a>
             </div>
@@ -33,32 +36,32 @@ const Footer = () => {
             <h3 className="font-heading font-bold text-lg mb-4">Navigation</h3>
             <ul className="space-y-2">
               <li>
-                <Link to="/" className="text-gray-300 hover:text-gbuss-gold transition-colors">
+                <Link to="/" className="text-gray-300 hover:text-gbuss-purple transition-colors">
                   Accueil
                 </Link>
               </li>
               <li>
-                <Link to="/vision-mission" className="text-gray-300 hover:text-gbuss-gold transition-colors">
+                <Link to="/vision-mission" className="text-gray-300 hover:text-gbuss-purple transition-colors">
                   Vision & Mission
                 </Link>
               </li>
               <li>
-                <Link to="/actions" className="text-gray-300 hover:text-gbuss-gold transition-colors">
+                <Link to="/actions" className="text-gray-300 hover:text-gbuss-purple transition-colors">
                   Nos Actions
                 </Link>
               </li>
               <li>
-                <Link to="/temoignages" className="text-gray-300 hover:text-gbuss-gold transition-colors">
+                <Link to="/temoignages" className="text-gray-300 hover:text-gbuss-purple transition-colors">
                   Témoignages
                 </Link>
               </li>
               <li>
-                <Link to="/equipe" className="text-gray-300 hover:text-gbuss-gold transition-colors">
+                <Link to="/equipe" className="text-gray-300 hover:text-gbuss-purple transition-colors">
                   Équipe
                 </Link>
               </li>
               <li>
-                <Link to="/contact" className="text-gray-300 hover:text-gbuss-gold transition-colors">
+                <Link to="/contact" className="text-gray-300 hover:text-gbuss-purple transition-colors">
                   Contact
                 </Link>
               </li>

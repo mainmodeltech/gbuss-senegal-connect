@@ -10,6 +10,7 @@ const VisionMission = () => {
       <PageHeader
         title="Vision & Mission"
         subtitle="Notre fondement et notre direction"
+        background="bg-gradient-to-r from-gbuss-blue to-gbuss-purple"
       />
 
       {/* Main Content */}
@@ -33,24 +34,24 @@ const VisionMission = () => {
             <ValueCard 
               title="Notre Vision" 
               description="Voir des disciples de Jésus-Christ transformés par l'Évangile dans l'environnement académique, impactant positivement le Sénégal et au-delà."
-              icon={<Book className="h-8 w-8 text-gbuss-green" />}
+              icon={<Book className="h-8 w-8 text-gbuss-blue" />}
             />
             <ValueCard 
               title="Notre Mission" 
               description="Faire des disciples de Jésus-Christ dans l'environnement académique à travers l'étude biblique, la prière et le témoignage."
-              icon={<HandHeart className="h-8 w-8 text-gbuss-green" />}
+              icon={<HandHeart className="h-8 w-8 text-gbuss-purple" />}
             />
             <ValueCard 
               title="Nos Valeurs" 
               description="Fidélité à la Parole de Dieu, vie de prière, témoignage courageux, service désintéressé et communion fraternelle."
-              icon={<Flag className="h-8 w-8 text-gbuss-green" />}
+              icon={<Flag className="h-8 w-8 text-gbuss-red" />}
             />
           </div>
 
           {/* Biblical Foundation */}
           <div className="max-w-3xl mx-auto">
             <h2 className="text-3xl font-bold text-gbuss-blue mb-6 text-center">Notre Base Biblique</h2>
-            <div className="bg-gbuss-light p-6 rounded-lg border-l-4 border-gbuss-green mb-8">
+            <div className="bg-gbuss-light p-6 rounded-lg border-l-4 border-gbuss-purple mb-8">
               <p className="italic text-lg mb-4">
                 "Allez, faites de toutes les nations des disciples, les baptisant au nom du Père, du Fils et du Saint-Esprit, 
                 et enseignez-leur à observer tout ce que je vous ai prescrit."
@@ -85,7 +86,7 @@ const ValueCard = ({ title, description, icon }: {
   icon: React.ReactNode;
 }) => {
   return (
-    <Card className="h-full hover:shadow-md transition-all">
+    <Card className="h-full hover:shadow-md transition-all border-t-4 border-t-gbuss-blue">
       <CardHeader className="flex flex-row items-center gap-4">
         {icon}
         <CardTitle className="text-xl">{title}</CardTitle>

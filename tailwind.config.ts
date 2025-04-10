@@ -1,3 +1,4 @@
+
 import type { Config } from "tailwindcss";
 
 export default {
@@ -62,11 +63,13 @@ export default {
 					border: 'hsl(var(--sidebar-border))',
 					ring: 'hsl(var(--sidebar-ring))'
 				},
-        // GBUSS custom colors
+        // GBUSS custom colors based on the logo
         gbuss: {
-          blue: '#1a365d',
-          green: '#2c6e49',
-          gold: '#ffc857',
+          blue: '#2196F3',      // Bright blue from the bird and GBUSS text
+          purple: '#6247AA',    // Purple from the Senegal map outline
+          green: '#4CAF50',     // Green from the leaves
+          red: '#F44336',       // Red from the fruit/berry
+          gray: '#546E7A',      // Grayish blue from the subtitle text
           light: '#f7f7f7',
           dark: '#333333'
         }
@@ -113,9 +116,10 @@ export default {
         body: ['Open Sans', 'sans-serif']
       },
       backgroundImage: {
-        'hero-pattern': "linear-gradient(rgba(26, 54, 93, 0.6), rgba(26, 54, 93, 0.6)), url('/hero-bg.jpg')"
+        'hero-pattern': "linear-gradient(rgba(33, 150, 243, 0.6), rgba(98, 71, 170, 0.6)), url('/hero-bg.jpg')"
       }
 		}
 	},
 	plugins: [require("tailwindcss-animate")],
 } satisfies Config;
+

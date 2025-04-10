@@ -1,4 +1,3 @@
-
 import { useState, useEffect } from "react";
 import { Link, useLocation } from "react-router-dom";
 import { Menu, X, ChevronDown } from "lucide-react";
@@ -8,7 +7,8 @@ import { cn } from "@/lib/utils";
 // Logo component
 const Logo = () => (
   <Link to="/" className="flex items-center gap-2">
-    <div className="font-heading font-bold text-xl text-gbuss-blue">
+    <img src="/logo-gbuss.png" alt="GBUSS Logo" className="h-10" />
+    <div className="font-heading font-bold text-xl text-gbuss-blue hidden md:block">
       GBUSS
     </div>
   </Link>
@@ -90,12 +90,12 @@ const Navbar = () => {
           {/* CTA Buttons */}
           <div className="hidden md:flex items-center gap-3">
             <Link to="/prier-avec-nous">
-              <Button variant="outline" className="border-gbuss-green text-gbuss-green hover:bg-gbuss-green hover:text-white">
+              <Button variant="outline" className="border-gbuss-purple text-gbuss-purple hover:bg-gbuss-purple hover:text-white">
                 S'engager
               </Button>
             </Link>
             <Link to="/faire-un-don">
-              <Button className="bg-gbuss-green text-white hover:bg-gbuss-green/90">
+              <Button className="bg-gbuss-blue text-white hover:bg-gbuss-blue/90">
                 Faire un don
               </Button>
             </Link>
@@ -129,12 +129,12 @@ const Navbar = () => {
             ))}
             <div className="flex flex-col gap-2 mt-2 px-4">
               <Link to="/prier-avec-nous">
-                <Button variant="outline" className="w-full border-gbuss-green text-gbuss-green hover:bg-gbuss-green hover:text-white">
+                <Button variant="outline" className="w-full border-gbuss-purple text-gbuss-purple hover:bg-gbuss-purple hover:text-white">
                   S'engager
                 </Button>
               </Link>
               <Link to="/faire-un-don">
-                <Button className="w-full bg-gbuss-green text-white hover:bg-gbuss-green/90">
+                <Button className="w-full bg-gbuss-blue text-white hover:bg-gbuss-blue/90">
                   Faire un don
                 </Button>
               </Link>

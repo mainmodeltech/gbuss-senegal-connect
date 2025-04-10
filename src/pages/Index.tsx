@@ -10,10 +10,13 @@ const Index = () => {
     <Layout>
       {/* Hero Section */}
       <section className="relative h-screen flex items-center bg-hero-pattern bg-cover bg-center">
-        {/* Overlay with reduced opacity for better readability */}
-        <div className="absolute inset-0 bg-gbuss-blue/60"></div>
+        {/* Overlay with gradient using logo colors */}
+        <div className="absolute inset-0 bg-gradient-to-br from-gbuss-blue/60 to-gbuss-purple/60"></div>
         
         <div className="container mx-auto px-4 relative z-10 text-center">
+          <div className="flex justify-center mb-8">
+            <img src="/logo-gbuss.png" alt="GBUSS Logo" className="h-32 animate-fade-in" />
+          </div>
           <h1 className="text-4xl md:text-5xl lg:text-6xl font-bold text-white mb-6 animate-fade-up">
             Groupe Biblique Universitaire et Scolaire du Sénégal
           </h1>
@@ -22,7 +25,7 @@ const Index = () => {
           </p>
           <div className="flex flex-wrap justify-center gap-4 animate-fade-up animate-delay-200">
             <Link to="/vision-mission">
-              <Button size="lg" className="bg-gbuss-green hover:bg-gbuss-green/90 text-white">
+              <Button size="lg" className="bg-gbuss-blue hover:bg-gbuss-blue/90 text-white">
                 Découvrir notre mission
               </Button>
             </Link>
@@ -51,13 +54,13 @@ const Index = () => {
             <FeatureCard 
               title="Notre Vision" 
               description="Voir des disciples de Jésus-Christ transformés par l'Evangile dans l'environnement académique."
-              icon={<Book className="h-10 w-10 text-gbuss-green" />}
+              icon={<Book className="h-10 w-10 text-gbuss-blue" />}
               link="/vision-mission"
             />
             <FeatureCard 
               title="Notre Communauté" 
               description="Une fraternité d'étudiants et élèves chrétiens unis par la foi et la prière."
-              icon={<Users className="h-10 w-10 text-gbuss-green" />}
+              icon={<Users className="h-10 w-10 text-gbuss-purple" />}
               link="/equipe"
             />
             <FeatureCard 
@@ -69,7 +72,7 @@ const Index = () => {
             <FeatureCard 
               title="Nous Soutenir" 
               description="Contribuez à notre mission par vos prières, votre temps ou vos dons."
-              icon={<Heart className="h-10 w-10 text-gbuss-green" />}
+              icon={<Heart className="h-10 w-10 text-gbuss-red" />}
               link="/faire-un-don"
             />
           </div>
@@ -92,7 +95,7 @@ const Index = () => {
                 </Button>
               </Link>
               <Link to="/faire-un-don">
-                <Button size="lg" className="bg-gbuss-green hover:bg-gbuss-green/90">
+                <Button size="lg" className="bg-gbuss-purple hover:bg-gbuss-purple/90">
                   Faire un don
                 </Button>
               </Link>
@@ -158,7 +161,7 @@ const FeatureCard = ({ title, description, icon, link }: {
         </div>
         <h3 className="text-xl font-bold mb-2 text-gbuss-blue">{title}</h3>
         <p className="text-gray-600 mb-4 flex-grow">{description}</p>
-        <Link to={link} className="text-gbuss-green font-medium hover:underline inline-flex items-center">
+        <Link to={link} className="text-gbuss-purple font-medium hover:underline inline-flex items-center">
           En savoir plus <ArrowRight className="ml-1 h-4 w-4" />
         </Link>
       </CardContent>
@@ -174,11 +177,11 @@ const TestimonialCard = ({ quote, name, role }: {
 }) => {
   return (
     <div className="bg-white p-6 rounded-lg shadow-md">
-      <div className="text-gbuss-gold text-4xl font-serif mb-4">"</div>
+      <div className="text-gbuss-blue text-4xl font-serif mb-4">"</div>
       <p className="italic text-gray-700 mb-6">{quote}</p>
       <div>
         <p className="font-semibold">{name}</p>
-        <p className="text-sm text-gray-600">{role}</p>
+        <p className="text-sm text-gbuss-gray">{role}</p>
       </div>
     </div>
   );
