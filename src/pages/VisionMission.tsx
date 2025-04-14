@@ -15,11 +15,14 @@ const VisionMission = () => {
 
   // Default content in case settings are not available
   const [content, setContent] = useState({
-    vision: "Voir des disciples de Jésus-Christ transformés par l'Évangile dans l'environnement académique, impactant positivement le Sénégal et au-delà.",
-    mission: "Faire des disciples de Jésus-Christ dans l'environnement académique à travers l'étude biblique, la prière et le témoignage.",
-    values: "Fidélité à la Parole de Dieu, vie de prière, témoignage courageux, service désintéressé et communion fraternelle.",
-    foundation1: "Le GBUSS est un mouvement chrétien qui rassemble des élèves et étudiants autour de la Parole de Dieu. Enraciné dans les valeurs bibliques, nous œuvrons pour faire connaître l'Évangile dans l'environnement académique.",
-    foundation2: "Notre travail est guidé par la conviction que la Parole de Dieu est pertinente pour la vie de chaque étudiant et peut transformer profondément nos communautés académiques.",
+    vision: "Notre vision est de voir des élèves, des étudiants et des amis qui croissent ensemble en tant que\n" +
+        "communautés de disciples, transformés par l'Évangile et ayant un impact sur l’université, l'église et la\n" +
+        "société pour la gloire de Christ",
+    mission: "Encourager les élèves, les étudiants et les amis à croitre ensemble, vivre et témoigner de leur foi\n" +
+        "chrétienne au sein de leurs milieux d'études et de travail.",
+    values: "Le GBUSS se fonde sur les valeurs d'Intégrité, de service, d'engagement et d'unité",
+    foundation1: "Le Groupe Biblique Universitaire et Scolaire du Sénégal (GBUSS) est une organisation chrétienne évangélique qui a pour vocation de proclamer l’Évangile de Jésus-Christ et de contribuer à la transformation spirituelle, morale et intellectuelle des jeunes dans les milieux universitaires et scolaires. ",
+    foundation2: "Fondé sur les principes bibliques et inspiré par la mission divine confiée à l’Église, le GBUSS s’engage à former des disciples appelés à impacter positivement leur génération et la société dans son ensemble.",
     biblicalBase1: "Notre mouvement se base sur la Grande Commission de Jésus-Christ. Nous croyons que chaque étudiant et élève est appelé à être disciple et à faire des disciples là où il se trouve.",
     biblicalBase2: "Par l'étude de la Bible, nous cherchons à comprendre et appliquer les enseignements de Jésus-Christ dans notre vie quotidienne et dans nos institutions académiques.",
     biblicalBase3: "Le GBUSS fait partie de la famille mondiale de l'IFES (International Fellowship of Evangelical Students), présente dans plus de 170 pays, œuvrant pour l'évangélisation et la formation des étudiants.",

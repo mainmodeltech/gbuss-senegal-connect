@@ -26,7 +26,7 @@ const Index = () => {
         
         <div className="container mx-auto px-4 relative z-10 text-center">
           <div className="flex justify-center mb-8">
-            <img src="/logo-gbuss.png" alt="GBUSS Logo" className="h-32 w-auto object-contain animate-fade-in" />
+            <img src="/logo.png" alt="GBUSS Logo" className="h-32 w-auto object-contain animate-fade-in rounded-full" />
           </div>
           <h1 className="text-4xl md:text-5xl lg:text-6xl font-bold text-white mb-6 animate-fade-up">
             Groupe Biblique Universitaire et Scolaire du Sénégal

@@ -9,7 +9,7 @@ import { cn } from "@/lib/utils";
 const Logo = () => (
   <Link to="/" className="flex items-center gap-2">
     <img src="/logo.png" alt="GBUSS Logo" className="h-10 w-auto" />
-    <div className="font-heading font-bold text-xl text-gbuss-blue hidden md:block">
+    <div className="font-heading font-bold text-xl text-white hidden md:block">
       GBUSS
     </div>
   </Link>
@@ -79,7 +79,7 @@ const Navbar = () => {
                 className={cn(
                   "text-sm font-medium transition-colors hover:text-gbuss-blue",
                   pathname === link.href
-                    ? "text-gbuss-white font-semibold"
+                    ? "text-white font-semibold"
                     : "text-gray-700"
                 )}
               >
