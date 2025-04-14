@@ -8,7 +8,7 @@ import { cn } from "@/lib/utils";
 // Logo component
 const Logo = () => (
   <Link to="/" className="flex items-center gap-2">
-    <img src="/logo-gbuss.png" alt="GBUSS Logo" className="h-10 w-auto" />
+    <img src="/logo.png" alt="GBUSS Logo" className="h-10 w-auto" />
     <div className="font-heading font-bold text-xl text-gbuss-blue hidden md:block">
       GBUSS
     </div>
@@ -79,7 +79,7 @@ const Navbar = () => {
                 className={cn(
                   "text-sm font-medium transition-colors hover:text-gbuss-blue",
                   pathname === link.href
-                    ? "text-gbuss-blue font-semibold"
+                    ? "text-gbuss-white font-semibold"
                     : "text-gray-700"
                 )}
               >
@@ -121,7 +121,7 @@ const Navbar = () => {
                 className={cn(
                   "px-4 py-2 text-sm rounded-md",
                   pathname === link.href
-                    ? "bg-gbuss-blue/10 text-gbuss-blue font-medium"
+                    ? "bg-gbuss-blue/10 text-gbuss-white font-medium"
                     : "text-gray-700 hover:bg-gray-100"
                 )}
               >
