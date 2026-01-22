@@ -1,12 +1,65 @@
-
+import { useEffect, useState } from "react";
 import Layout from "@/components/layout/Layout";
 import PageHeader from "@/components/layout/PageHeader";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
 import { Card, CardContent, CardDescription, CardFooter, CardHeader, CardTitle } from "@/components/ui/card";
 import { Badge } from "@/components/ui/badge";
-import { CalendarDays, GraduationCap, Users, BookOpen, HeartHandshake } from "lucide-react";
+import { CalendarDays, GraduationCap, Users, BookOpen, HeartHandshake, Loader2 } from "lucide-react";
+import { getActivities, getEvents, getProjects, getStatistics } from "@/services/api";
+import type { Activity, Event, Project, Statistic } from "@/lib/supabase";
+
+// Icon mapping for activities
+const iconMap: Record<string, React.ReactNode> = {
+  BookOpen: <BookOpen className="h-6 w-6" />,
+  Users: <Users className="h-6 w-6" />,
+  GraduationCap: <GraduationCap className="h-6 w-6" />,
+  HeartHandshake: <HeartHandshake className="h-6 w-6" />,
+};
 
 const Actions = () => {
+  const [activities, setActivities] = useState<Activity[]>([]);
+  const [events, setEvents] = useState<Event[]>([]);
+  const [projects, setProjects] = useState<Project[]>([]);
+  const [statistics, setStatistics] = useState<Statistic[]>([]);
+  const [loading, setLoading] = useState(true);
+
+  useEffect(() => {
+    const fetchData = async () => {
+      try {
+        const [activitiesData, eventsData, projectsData, statsData] = await Promise.all([
+          getActivities(),
+          getEvents(),
+          getProjects(),
+          getStatistics()
+        ]);
+        setActivities(activitiesData || []);
+        setEvents(eventsData || []);
+        setProjects(projectsData || []);
+        setStatistics(statsData || []);
+      } catch (error) {
+        console.error('Error fetching data:', error);
+      } finally {
+        setLoading(false);
+      }
+    };
+
+    fetchData();
+  }, []);
+
+  if (loading) {
+    return (
+      <Layout>
+        <PageHeader
+          title="Nos Actions"
+          subtitle="Découvrez les activités et projets du GBUSS"
+        />
+        <div className="flex justify-center items-center py-32">
+          <Loader2 className="h-8 w-8 animate-spin text-gbuss-blue" />
+        </div>
+      </Layout>
+    );
+  }
+
   return (
     <Layout>
       <PageHeader
@@ -36,94 +89,55 @@ const Actions = () => {
             {/* Regular Activities */}
             <TabsContent value="activities" className="mt-4">
               <div className="grid grid-cols-1 md:grid-cols-2 gap-8">
-                <ActivityCard 
-                  title="Études Bibliques"
-                  description="Réunions hebdomadaires d'étude de la Bible dans différents campus et établissements scolaires."
-                  icon={<BookOpen className="h-6 w-6" />}
-                />
-                <ActivityCard 
-                  title="Groupes de Prière"
-                  description="Temps de prière réguliers pour les étudiants, l'université et la nation."
-                  icon={<Users className="h-6 w-6" />}
-                />
-                <ActivityCard 
-                  title="Formations"
-                  description="Ateliers et séminaires pour équiper les étudiants à vivre et partager leur foi."
-                  icon={<GraduationCap className="h-6 w-6" />}
-                />
-                <ActivityCard 
-                  title="Mentorat"
-                  description="Accompagnement individuel pour la croissance spirituelle et le développement personnel."
-                  icon={<HeartHandshake className="h-6 w-6" />}
-                />
+                {activities.length > 0 ? (
+                  activities.map((activity) => (
+                    <ActivityCard 
+                      key={activity.id}
+                      title={activity.title}
+                      description={activity.description}
+                      icon={iconMap[activity.icon] || <BookOpen className="h-6 w-6" />}
+                    />
+                  ))
+                ) : (
+                  <p className="col-span-2 text-center text-gray-500">Aucune activité disponible pour le moment.</p>
+                )}
               </div>
             </TabsContent>
 
             {/* Events */}
             <TabsContent value="events" className="mt-4">
               <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
-                <EventCard 
-                  title="Camp Biblique Annuel"
-                  description="Un temps de retraite intensive autour de la Parole de Dieu, avec enseignements, prières et communion fraternelle."
-                  date="Août 2023"
-                  status="Passé"
-                />
-                <EventCard 
-                  title="Conférence Nationale"
-                  description="Rencontre annuelle rassemblant les membres du GBUSS de tout le Sénégal pour un temps d'édification et de vision."
-                  date="Décembre 2023"
-                  status="À venir"
-                />
-                <EventCard 
-                  title="Journée Missionnaire"
-                  description="Journée dédiée à l'évangélisation sur les campus universitaires et dans les lycées."
-                  date="Mars 2024"
-                  status="Planifié"
-                />
-                <EventCard 
-                  title="Forum des Questions"
-                  description="Débats ouverts sur des questions existentielles et spirituelles avec les étudiants."
-                  date="Trimestriel"
-                  status="Récurrent"
-                />
-                <EventCard 
-                  title="Weekend de Formation des Responsables"
-                  description="Session intensive pour équiper les leaders des groupes GBUSS."
-                  date="Avril 2024"
-                  status="Planifié"
-                />
-                <EventCard 
-                  title="Semaine de la Bible"
-                  description="Une semaine dédiée à la promotion de la Bible et de sa lecture dans les institutions académiques."
-                  date="Novembre 2023"
-                  status="À venir"
-                />
+                {events.length > 0 ? (
+                  events.map((event) => (
+                    <EventCard 
+                      key={event.id}
+                      title={event.title}
+                      description={event.description}
+                      date={new Date(event.date).toLocaleDateString('fr-FR', { month: 'long', year: 'numeric' })}
+                      status={event.status}
+                    />
+                  ))
+                ) : (
+                  <p className="col-span-3 text-center text-gray-500">Aucun événement disponible pour le moment.</p>
+                )}
               </div>
             </TabsContent>
 
             {/* Projects */}
             <TabsContent value="projects" className="mt-4">
               <div className="grid grid-cols-1 md:grid-cols-2 gap-8">
-                <ProjectCard 
-                  title="Bibliothèques Mobiles"
-                  description="Mise en place de bibliothèques chrétiennes itinérantes dans les campus et établissements scolaires."
-                  status="En cours"
-                />
-                <ProjectCard 
-                  title="Bourses d'Études"
-                  description="Programme de bourses pour les étudiants chrétiens méritants en difficulté financière."
-                  status="En développement"
-                />
-                <ProjectCard 
-                  title="Publication de Ressources"
-                  description="Création et distribution de ressources bibliques adaptées au contexte sénégalais."
-                  status="En cours"
-                />
-                <ProjectCard 
-                  title="Conférences Interreligieuses"
-                  description="Organisation de dialogues respectueux entre étudiants de différentes confessions."
-                  status="Périodique"
-                />
+                {projects.length > 0 ? (
+                  projects.map((project) => (
+                    <ProjectCard 
+                      key={project.id}
+                      title={project.title}
+                      description={project.description}
+                      status={project.status}
+                    />
+                  ))
+                ) : (
+                  <p className="col-span-2 text-center text-gray-500">Aucun projet disponible pour le moment.</p>
+                )}
               </div>
             </TabsContent>
           </Tabs>
@@ -136,10 +150,18 @@ const Actions = () => {
           <h2 className="text-3xl font-bold text-gbuss-blue mb-12 text-center">Notre Impact</h2>
           
           <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-8 max-w-5xl mx-auto">
-            <ImpactStat number="25+" description="Années d'existence au Sénégal" />
-            <ImpactStat number="15+" description="Campus et écoles touchés" />
-            <ImpactStat number="500+" description="Étudiants impliqués chaque année" />
-            <ImpactStat number="1000+" description="Vies transformées par l'Évangile" />
+            {statistics.length > 0 ? (
+              statistics.map((stat) => (
+                <ImpactStat key={stat.id} number={stat.value} description={stat.title} />
+              ))
+            ) : (
+              <>
+                <ImpactStat number="25+" description="Années d'existence au Sénégal" />
+                <ImpactStat number="15+" description="Campus et écoles touchés" />
+                <ImpactStat number="500+" description="Étudiants impliqués chaque année" />
+                <ImpactStat number="1000+" description="Vies transformées par l'Évangile" />
+              </>
+            )}
           </div>
         </div>
       </section>

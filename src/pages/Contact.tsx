@@ -1,5 +1,4 @@
-
-import { useState } from "react";
+import { useState, useEffect } from "react";
 import Layout from "@/components/layout/Layout";
 import PageHeader from "@/components/layout/PageHeader";
 import { Button } from "@/components/ui/button";
@@ -7,29 +6,92 @@ import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
 import { Textarea } from "@/components/ui/textarea";
-import { CheckCircle, Mail, Phone, MapPin, Facebook, Twitter, Instagram } from "lucide-react";
+import { CheckCircle, Mail, Phone, MapPin, Facebook, Twitter, Instagram, Loader2 } from "lucide-react";
 import { useToast } from "@/hooks/use-toast";
+import { getContactInfo, getOpeningHours, getFAQs, submitContactForm } from "@/services/api";
+import type { ContactInfo as ContactInfoType, OpeningHours, FAQ } from "@/lib/supabase";
 
 const Contact = () => {
   const [isSubmitting, setIsSubmitting] = useState(false);
   const [showConfirmation, setShowConfirmation] = useState(false);
+  const [contactInfo, setContactInfo] = useState<ContactInfoType[]>([]);
+  const [openingHours, setOpeningHours] = useState<OpeningHours[]>([]);
+  const [faqs, setFaqs] = useState<FAQ[]>([]);
+  const [loading, setLoading] = useState(true);
+  const [formData, setFormData] = useState({
+    name: '',
+    email: '',
+    subject: '',
+    message: ''
+  });
   const { toast } = useToast();
 
-  const handleSubmit = (e: React.FormEvent) => {
+  useEffect(() => {
+    const fetchData = async () => {
+      try {
+        const [contactData, hoursData, faqData] = await Promise.all([
+          getContactInfo(),
+          getOpeningHours(),
+          getFAQs()
+        ]);
+        setContactInfo(contactData || []);
+        setOpeningHours(hoursData || []);
+        setFaqs(faqData || []);
+      } catch (error) {
+        console.error('Error fetching contact data:', error);
+      } finally {
+        setLoading(false);
+      }
+    };
+
+    fetchData();
+  }, []);
+
+  const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
     setIsSubmitting(true);
     
-    // Simulate form submission
-    setTimeout(() => {
-      setIsSubmitting(false);
+    try {
+      await submitContactForm(formData);
       setShowConfirmation(true);
       toast({
         title: "Message envoyé",
         description: "Nous vous répondrons dans les plus brefs délais.",
         variant: "default",
       });
-    }, 1500);
+      setFormData({ name: '', email: '', subject: '', message: '' });
+    } catch (error) {
+      console.error('Error submitting form:', error);
+      toast({
+        title: "Erreur",
+        description: "Une erreur s'est produite. Veuillez réessayer.",
+        variant: "destructive",
+      });
+    } finally {
+      setIsSubmitting(false);
+    }
   };
+
+  const getIconForType = (type: string) => {
+    switch (type) {
+      case 'address': return <MapPin className="h-6 w-6" />;
+      case 'email': return <Mail className="h-6 w-6" />;
+      case 'phone': return <Phone className="h-6 w-6" />;
+      case 'social': return <Facebook className="h-6 w-6" />;
+      default: return <Mail className="h-6 w-6" />;
+    }
+  };
+
+  if (loading) {
+    return (
+      <Layout>
+        <PageHeader title="Contact" subtitle="Nous sommes à votre écoute" />
+        <div className="flex justify-center items-center py-32">
+          <Loader2 className="h-8 w-8 animate-spin text-gbuss-blue" />
+        </div>
+      </Layout>
+    );
+  }
 
   return (
     <Layout>
@@ -55,17 +117,36 @@ const Contact = () => {
                       <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
                         <div>
                           <Label htmlFor="name">Nom complet</Label>
-                          <Input id="name" required className="mt-1" />
+                          <Input 
+                            id="name" 
+                            required 
+                            className="mt-1"
+                            value={formData.name}
+                            onChange={(e) => setFormData({...formData, name: e.target.value})}
+                          />
                         </div>
                         <div>
                           <Label htmlFor="email">Email</Label>
-                          <Input id="email" type="email" required className="mt-1" />
+                          <Input 
+                            id="email" 
+                            type="email" 
+                            required 
+                            className="mt-1"
+                            value={formData.email}
+                            onChange={(e) => setFormData({...formData, email: e.target.value})}
+                          />
                         </div>
                       </div>
 
                       <div>
                         <Label htmlFor="subject">Sujet</Label>
-                        <Input id="subject" required className="mt-1" />
+                        <Input 
+                          id="subject" 
+                          required 
+                          className="mt-1"
+                          value={formData.subject}
+                          onChange={(e) => setFormData({...formData, subject: e.target.value})}
+                        />
                       </div>
 
                       <div>
@@ -75,6 +156,8 @@ const Contact = () => {
                           required 
                           className="mt-1"
                           rows={6}
+                          value={formData.message}
+                          onChange={(e) => setFormData({...formData, message: e.target.value})}
                         />
                       </div>
 
@@ -95,69 +178,57 @@ const Contact = () => {
                 <h2 className="text-2xl font-bold text-gbuss-blue mb-6">Comment nous joindre</h2>
                 
                 <div className="space-y-6">
-                  <ContactInfoCard 
-                    title="Adresse"
-                    icon={<MapPin className="h-6 w-6" />}
-                  >
-                    <p className="text-gray-600">Bureau National du GBUSS</p>
-                    <p className="text-gray-600">Dakar, Sénégal</p>
-                  </ContactInfoCard>
-                  
-                  <ContactInfoCard 
-                    title="Email"
-                    icon={<Mail className="h-6 w-6" />}
-                  >
-                    <p>
-                      <a href="mailto:contact@gbuss.org" className="text-gbuss-blue hover:underline">
-                        contact@gbuss.org
-                      </a>
-                    </p>
-                    <p>
-                      <a href="mailto:info@gbuss.org" className="text-gbuss-blue hover:underline">
-                        info@gbuss.org
-                      </a>
-                    </p>
-                  </ContactInfoCard>
-                  
-                  <ContactInfoCard 
-                    title="Téléphone"
-                    icon={<Phone className="h-6 w-6" />}
-                  >
-                    <p>
-                      <a href="tel:+22133XXXXXX" className="text-gbuss-blue hover:underline">
-                        +221 33 XXX XX XX
-                      </a>
-                    </p>
-                    <p>
-                      <a href="tel:+22177XXXXXX" className="text-gbuss-blue hover:underline">
-                        +221 77 XXX XX XX
-                      </a>
-                    </p>
-                  </ContactInfoCard>
-
-                  <ContactInfoCard 
-                    title="Réseaux sociaux"
-                    icon={<Facebook className="h-6 w-6" />}
-                  >
-                    <div className="flex space-x-4">
-                      <a href="#" target="_blank" rel="noopener noreferrer" aria-label="Facebook" className="text-gbuss-blue hover:text-gbuss-blue/80">
-                        <Facebook size={24} />
-                      </a>
-                      <a href="#" target="_blank" rel="noopener noreferrer" aria-label="Twitter" className="text-gbuss-blue hover:text-gbuss-blue/80">
-                        <Twitter size={24} />
-                      </a>
-                      <a href="#" target="_blank" rel="noopener noreferrer" aria-label="Instagram" className="text-gbuss-blue hover:text-gbuss-blue/80">
-                        <Instagram size={24} />
-                      </a>
-                    </div>
-                  </ContactInfoCard>
+                  {contactInfo.length > 0 ? (
+                    contactInfo.map((info) => (
+                      <ContactInfoCard 
+                        key={info.id}
+                        title={info.title}
+                        icon={getIconForType(info.type)}
+                      >
+                        {info.link ? (
+                          <a href={info.link} className="text-gbuss-blue hover:underline">
+                            {info.value}
+                          </a>
+                        ) : (
+                          <p className="text-gray-600">{info.value}</p>
+                        )}
+                      </ContactInfoCard>
+                    ))
+                  ) : (
+                    <>
+                      <ContactInfoCard title="Adresse" icon={<MapPin className="h-6 w-6" />}>
+                        <p className="text-gray-600">Bureau National du GBUSS</p>
+                        <p className="text-gray-600">Dakar, Sénégal</p>
+                      </ContactInfoCard>
+                      <ContactInfoCard title="Email" icon={<Mail className="h-6 w-6" />}>
+                        <a href="mailto:contact@gbuss.org" className="text-gbuss-blue hover:underline">
+                          contact@gbuss.org
+                        </a>
+                      </ContactInfoCard>
+                      <ContactInfoCard title="Téléphone" icon={<Phone className="h-6 w-6" />}>
+                        <a href="tel:+22133XXXXXX" className="text-gbuss-blue hover:underline">
+                          +221 33 XXX XX XX
+                        </a>
+                      </ContactInfoCard>
+                    </>
+                  )}
                 </div>
 
                 <div className="mt-8">
                   <h3 className="font-semibold mb-4">Horaires d'ouverture</h3>
                   <div className="bg-gbuss-light p-4 rounded-md">
-                    <p className="mb-2"><span className="font-medium">Lundi - Vendredi:</span> 9h00 - 17h00</p>
-                    <p><span className="font-medium">Samedi - Dimanche:</span> Fermé</p>
+                    {openingHours.length > 0 ? (
+                      openingHours.map((hours) => (
+                        <p key={hours.id} className="mb-2">
+                          <span className="font-medium">{hours.days}:</span> {hours.is_closed ? 'Fermé' : hours.hours}
+                        </p>
+                      ))
+                    ) : (
+                      <>
+                        <p className="mb-2"><span className="font-medium">Lundi - Vendredi:</span> 9h00 - 17h00</p>
+                        <p><span className="font-medium">Samedi - Dimanche:</span> Fermé</p>
+                      </>
+                    )}
                   </div>
                 </div>
               </div>
@@ -171,7 +242,6 @@ const Contact = () => {
         <div className="container mx-auto px-4 text-center">
           <h2 className="text-2xl font-bold text-gbuss-blue mb-12">Où nous trouver</h2>
           <div className="max-w-5xl mx-auto">
-            {/* Replace with actual map component when available */}
             <div className="bg-white p-12 rounded-md shadow-sm border text-center text-gray-500">
               Carte interactive de localisation du GBUSS
               <p className="mt-4 text-sm">
@@ -188,22 +258,26 @@ const Contact = () => {
           <h2 className="text-2xl font-bold text-gbuss-blue mb-12 text-center">Questions fréquentes</h2>
           
           <div className="max-w-3xl mx-auto space-y-6">
-            <FaqItem 
-              question="Comment puis-je rejoindre un groupe GBUSS dans mon université?"
-              answer="Contactez-nous par email ou téléphone, et nous vous mettrons en relation avec le coordinateur local de votre campus. Vous pouvez également nous indiquer votre institution dans le formulaire de contact."
-            />
-            <FaqItem 
-              question="Proposez-vous des formations pour les responsables d'église?"
-              answer="Oui, nous organisons régulièrement des formations pour les responsables d'église qui souhaitent développer un ministère auprès des jeunes et des étudiants. Contactez-nous pour connaître les prochaines dates."
-            />
-            <FaqItem 
-              question="Comment mon église peut-elle collaborer avec le GBUSS?"
-              answer="Nous sommes ouverts à différentes formes de partenariat avec les églises locales. Cela peut inclure l'organisation d'événements conjoints, le partage de ressources, ou l'envoi de volontaires. Contactez-nous pour discuter des possibilités."
-            />
-            <FaqItem 
-              question="Puis-je inviter un représentant du GBUSS à intervenir dans mon église ou mon groupe?"
-              answer="Absolument! Nos staffs sont disponibles pour partager sur le ministère auprès des étudiants et pour former ou encourager vos jeunes. Utilisez le formulaire de contact en précisant vos besoins."
-            />
+            {faqs.length > 0 ? (
+              faqs.map((faq) => (
+                <FaqItem 
+                  key={faq.id}
+                  question={faq.question}
+                  answer={faq.answer}
+                />
+              ))
+            ) : (
+              <>
+                <FaqItem 
+                  question="Comment puis-je rejoindre un groupe GBUSS dans mon université?"
+                  answer="Contactez-nous par email ou téléphone, et nous vous mettrons en relation avec le coordinateur local de votre campus."
+                />
+                <FaqItem 
+                  question="Proposez-vous des formations pour les responsables d'église?"
+                  answer="Oui, nous organisons régulièrement des formations pour les responsables d'église qui souhaitent développer un ministère auprès des jeunes."
+                />
+              </>
+            )}
           </div>
         </div>
       </section>

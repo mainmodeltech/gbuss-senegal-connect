@@ -1,9 +1,8 @@
-
 import { useState } from "react";
 import Layout from "@/components/layout/Layout";
 import PageHeader from "@/components/layout/PageHeader";
 import { Button } from "@/components/ui/button";
-import { Card, CardContent, CardDescription, CardFooter, CardHeader, CardTitle } from "@/components/ui/card";
+import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
 import { Label } from "@/components/ui/label";
 import { Input } from "@/components/ui/input";
 import { Textarea } from "@/components/ui/textarea";
@@ -11,26 +10,132 @@ import { Checkbox } from "@/components/ui/checkbox";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
 import { CheckCircle, HeartHandshake, Calendar } from "lucide-react";
 import { useToast } from "@/hooks/use-toast";
+import { submitPrayerCommitment, submitVolunteerCommitment, submitResourceContribution } from "@/services/api";
 
 const PrierAvecNous = () => {
   const [isSubmitting, setIsSubmitting] = useState(false);
   const [showConfirmation, setShowConfirmation] = useState(false);
+  const [confirmationType, setConfirmationType] = useState<'prayer' | 'volunteer' | 'resources'>('prayer');
   const { toast } = useToast();
 
-  const handleSubmit = (e: React.FormEvent) => {
+  // Prayer form state
+  const [prayerForm, setPrayerForm] = useState({
+    name: '',
+    email: '',
+    frequency: '',
+    preferred_topics: [] as string[],
+    receive_updates: false
+  });
+
+  // Volunteer form state
+  const [volunteerForm, setVolunteerForm] = useState({
+    name: '',
+    email: '',
+    phone: '',
+    skills: [] as string[],
+    availability: '',
+    message: ''
+  });
+
+  // Resource form state
+  const [resourceForm, setResourceForm] = useState({
+    name: '',
+    email: '',
+    phone: '',
+    resource_type: '',
+    description: '',
+    is_recurring: false
+  });
+
+  const handlePrayerSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
     setIsSubmitting(true);
     
-    // Simulate form submission
-    setTimeout(() => {
-      setIsSubmitting(false);
+    try {
+      await submitPrayerCommitment(prayerForm);
+      setConfirmationType('prayer');
       setShowConfirmation(true);
       toast({
         title: "Engagement enregistré",
         description: "Merci de vous engager à nos côtés dans la prière.",
         variant: "default",
       });
-    }, 1500);
+      setPrayerForm({ name: '', email: '', frequency: '', preferred_topics: [], receive_updates: false });
+    } catch (error) {
+      console.error('Error submitting prayer commitment:', error);
+      toast({
+        title: "Erreur",
+        description: "Une erreur s'est produite. Veuillez réessayer.",
+        variant: "destructive",
+      });
+    } finally {
+      setIsSubmitting(false);
+    }
+  };
+
+  const handleVolunteerSubmit = async (e: React.FormEvent) => {
+    e.preventDefault();
+    setIsSubmitting(true);
+    
+    try {
+      await submitVolunteerCommitment(volunteerForm);
+      setConfirmationType('volunteer');
+      setShowConfirmation(true);
+      toast({
+        title: "Candidature envoyée",
+        description: "Merci pour votre engagement bénévole.",
+        variant: "default",
+      });
+      setVolunteerForm({ name: '', email: '', phone: '', skills: [], availability: '', message: '' });
+    } catch (error) {
+      console.error('Error submitting volunteer commitment:', error);
+      toast({
+        title: "Erreur",
+        description: "Une erreur s'est produite. Veuillez réessayer.",
+        variant: "destructive",
+      });
+    } finally {
+      setIsSubmitting(false);
+    }
+  };
+
+  const handleResourceSubmit = async (e: React.FormEvent) => {
+    e.preventDefault();
+    setIsSubmitting(true);
+    
+    try {
+      await submitResourceContribution(resourceForm);
+      setConfirmationType('resources');
+      setShowConfirmation(true);
+      toast({
+        title: "Contribution enregistrée",
+        description: "Merci pour votre générosité.",
+        variant: "default",
+      });
+      setResourceForm({ name: '', email: '', phone: '', resource_type: '', description: '', is_recurring: false });
+    } catch (error) {
+      console.error('Error submitting resource contribution:', error);
+      toast({
+        title: "Erreur",
+        description: "Une erreur s'est produite. Veuillez réessayer.",
+        variant: "destructive",
+      });
+    } finally {
+      setIsSubmitting(false);
+    }
+  };
+
+  const handlePrayerFrequencyChange = (frequency: string) => {
+    setPrayerForm({ ...prayerForm, frequency });
+  };
+
+  const handleSkillToggle = (skill: string) => {
+    setVolunteerForm(prev => ({
+      ...prev,
+      skills: prev.skills.includes(skill)
+        ? prev.skills.filter(s => s !== skill)
+        : [...prev.skills, skill]
+    }));
   };
 
   return (
@@ -44,7 +149,7 @@ const PrierAvecNous = () => {
       <section className="py-16">
         <div className="container mx-auto px-4">
           {showConfirmation ? (
-            <Confirmation setShowConfirmation={setShowConfirmation} />
+            <Confirmation type={confirmationType} setShowConfirmation={setShowConfirmation} />
           ) : (
             <div className="grid grid-cols-1 lg:grid-cols-3 gap-8 max-w-6xl mx-auto">
               {/* Engagement Form */}
@@ -68,53 +173,59 @@ const PrierAvecNous = () => {
                         </CardDescription>
                       </CardHeader>
                       <CardContent>
-                        <form onSubmit={handleSubmit}>
+                        <form onSubmit={handlePrayerSubmit}>
                           <div className="space-y-6">
                             <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
                               <div>
-                                <Label htmlFor="name">Nom complet</Label>
-                                <Input id="name" required className="mt-1" />
+                                <Label htmlFor="prayer-name">Nom complet</Label>
+                                <Input 
+                                  id="prayer-name" 
+                                  required 
+                                  className="mt-1"
+                                  value={prayerForm.name}
+                                  onChange={(e) => setPrayerForm({...prayerForm, name: e.target.value})}
+                                />
                               </div>
                               <div>
-                                <Label htmlFor="email">Email</Label>
-                                <Input id="email" type="email" required className="mt-1" />
+                                <Label htmlFor="prayer-email">Email</Label>
+                                <Input 
+                                  id="prayer-email" 
+                                  type="email" 
+                                  required 
+                                  className="mt-1"
+                                  value={prayerForm.email}
+                                  onChange={(e) => setPrayerForm({...prayerForm, email: e.target.value})}
+                                />
                               </div>
                             </div>
 
                             <div>
                               <Label>Je m'engage à prier</Label>
                               <div className="grid grid-cols-2 gap-3 mt-3">
-                                <div className="flex items-start space-x-3">
-                                  <Checkbox id="daily" />
-                                  <Label htmlFor="daily" className="font-normal">Quotidiennement</Label>
-                                </div>
-                                <div className="flex items-start space-x-3">
-                                  <Checkbox id="weekly" />
-                                  <Label htmlFor="weekly" className="font-normal">Hebdomadairement</Label>
-                                </div>
-                                <div className="flex items-start space-x-3">
-                                  <Checkbox id="monthly" />
-                                  <Label htmlFor="monthly" className="font-normal">Mensuellement</Label>
-                                </div>
-                                <div className="flex items-start space-x-3">
-                                  <Checkbox id="specific-time" />
-                                  <Label htmlFor="specific-time" className="font-normal">À des occasions spécifiques</Label>
-                                </div>
+                                {['daily', 'weekly', 'monthly', 'specific'].map((freq) => (
+                                  <div key={freq} className="flex items-start space-x-3">
+                                    <Checkbox 
+                                      id={freq} 
+                                      checked={prayerForm.frequency === freq}
+                                      onCheckedChange={() => handlePrayerFrequencyChange(freq)}
+                                    />
+                                    <Label htmlFor={freq} className="font-normal">
+                                      {freq === 'daily' && 'Quotidiennement'}
+                                      {freq === 'weekly' && 'Hebdomadairement'}
+                                      {freq === 'monthly' && 'Mensuellement'}
+                                      {freq === 'specific' && 'À des occasions spécifiques'}
+                                    </Label>
+                                  </div>
+                                ))}
                               </div>
                             </div>
 
-                            <div>
-                              <Label htmlFor="prayer-topics">Sujets de prière particuliers</Label>
-                              <Textarea 
-                                id="prayer-topics" 
-                                placeholder="Y a-t-il des aspects spécifiques du ministère pour lesquels vous souhaitez prier?"
-                                className="mt-1"
-                                rows={4}
-                              />
-                            </div>
-
                             <div className="flex items-start space-x-3">
-                              <Checkbox id="prayer-letter" />
+                              <Checkbox 
+                                id="prayer-letter" 
+                                checked={prayerForm.receive_updates}
+                                onCheckedChange={(checked) => setPrayerForm({...prayerForm, receive_updates: checked as boolean})}
+                              />
                               <div className="grid gap-1.5">
                                 <Label htmlFor="prayer-letter" className="font-normal">
                                   Je souhaite recevoir la lettre mensuelle de prière du GBUSS
@@ -148,51 +259,62 @@ const PrierAvecNous = () => {
                         </CardDescription>
                       </CardHeader>
                       <CardContent>
-                        <form onSubmit={handleSubmit}>
+                        <form onSubmit={handleVolunteerSubmit}>
                           <div className="space-y-6">
                             <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
                               <div>
                                 <Label htmlFor="vol-name">Nom complet</Label>
-                                <Input id="vol-name" required className="mt-1" />
+                                <Input 
+                                  id="vol-name" 
+                                  required 
+                                  className="mt-1"
+                                  value={volunteerForm.name}
+                                  onChange={(e) => setVolunteerForm({...volunteerForm, name: e.target.value})}
+                                />
                               </div>
                               <div>
                                 <Label htmlFor="vol-email">Email</Label>
-                                <Input id="vol-email" type="email" required className="mt-1" />
+                                <Input 
+                                  id="vol-email" 
+                                  type="email" 
+                                  required 
+                                  className="mt-1"
+                                  value={volunteerForm.email}
+                                  onChange={(e) => setVolunteerForm({...volunteerForm, email: e.target.value})}
+                                />
                               </div>
                             </div>
 
                             <div>
                               <Label htmlFor="vol-phone">Téléphone</Label>
-                              <Input id="vol-phone" required className="mt-1" />
+                              <Input 
+                                id="vol-phone" 
+                                className="mt-1"
+                                value={volunteerForm.phone}
+                                onChange={(e) => setVolunteerForm({...volunteerForm, phone: e.target.value})}
+                              />
                             </div>
 
                             <div>
                               <Label>Domaines d'intérêt</Label>
                               <div className="grid grid-cols-1 md:grid-cols-2 gap-3 mt-3">
-                                <div className="flex items-start space-x-3">
-                                  <Checkbox id="teaching" />
-                                  <Label htmlFor="teaching" className="font-normal">Animation d'études bibliques</Label>
-                                </div>
-                                <div className="flex items-start space-x-3">
-                                  <Checkbox id="mentoring" />
-                                  <Label htmlFor="mentoring" className="font-normal">Mentorat</Label>
-                                </div>
-                                <div className="flex items-start space-x-3">
-                                  <Checkbox id="events" />
-                                  <Label htmlFor="events" className="font-normal">Organisation d'événements</Label>
-                                </div>
-                                <div className="flex items-start space-x-3">
-                                  <Checkbox id="comms" />
-                                  <Label htmlFor="comms" className="font-normal">Communication</Label>
-                                </div>
-                                <div className="flex items-start space-x-3">
-                                  <Checkbox id="admin" />
-                                  <Label htmlFor="admin" className="font-normal">Administration</Label>
-                                </div>
-                                <div className="flex items-start space-x-3">
-                                  <Checkbox id="tech" />
-                                  <Label htmlFor="tech" className="font-normal">Support technique</Label>
-                                </div>
+                                {[
+                                  { id: 'teaching', label: "Animation d'études bibliques" },
+                                  { id: 'mentoring', label: 'Mentorat' },
+                                  { id: 'events', label: "Organisation d'événements" },
+                                  { id: 'comms', label: 'Communication' },
+                                  { id: 'admin', label: 'Administration' },
+                                  { id: 'tech', label: 'Support technique' }
+                                ].map((skill) => (
+                                  <div key={skill.id} className="flex items-start space-x-3">
+                                    <Checkbox 
+                                      id={skill.id}
+                                      checked={volunteerForm.skills.includes(skill.id)}
+                                      onCheckedChange={() => handleSkillToggle(skill.id)}
+                                    />
+                                    <Label htmlFor={skill.id} className="font-normal">{skill.label}</Label>
+                                  </div>
+                                ))}
                               </div>
                             </div>
 
@@ -203,16 +325,20 @@ const PrierAvecNous = () => {
                                 placeholder="Quand êtes-vous disponible? (jours, heures, fréquence)"
                                 className="mt-1"
                                 rows={2}
+                                value={volunteerForm.availability}
+                                onChange={(e) => setVolunteerForm({...volunteerForm, availability: e.target.value})}
                               />
                             </div>
 
                             <div>
-                              <Label htmlFor="vol-experience">Expérience</Label>
+                              <Label htmlFor="vol-message">Message (optionnel)</Label>
                               <Textarea 
-                                id="vol-experience" 
+                                id="vol-message" 
                                 placeholder="Partagez brièvement votre expérience et vos motivations"
                                 className="mt-1"
                                 rows={4}
+                                value={volunteerForm.message}
+                                onChange={(e) => setVolunteerForm({...volunteerForm, message: e.target.value})}
                               />
                             </div>
 
@@ -239,62 +365,74 @@ const PrierAvecNous = () => {
                         </CardDescription>
                       </CardHeader>
                       <CardContent>
-                        <form onSubmit={handleSubmit}>
+                        <form onSubmit={handleResourceSubmit}>
                           <div className="space-y-6">
                             <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
                               <div>
                                 <Label htmlFor="res-name">Nom complet</Label>
-                                <Input id="res-name" required className="mt-1" />
+                                <Input 
+                                  id="res-name" 
+                                  required 
+                                  className="mt-1"
+                                  value={resourceForm.name}
+                                  onChange={(e) => setResourceForm({...resourceForm, name: e.target.value})}
+                                />
                               </div>
                               <div>
                                 <Label htmlFor="res-email">Email</Label>
-                                <Input id="res-email" type="email" required className="mt-1" />
+                                <Input 
+                                  id="res-email" 
+                                  type="email" 
+                                  required 
+                                  className="mt-1"
+                                  value={resourceForm.email}
+                                  onChange={(e) => setResourceForm({...resourceForm, email: e.target.value})}
+                                />
                               </div>
                             </div>
 
                             <div>
                               <Label htmlFor="res-phone">Téléphone</Label>
-                              <Input id="res-phone" className="mt-1" />
+                              <Input 
+                                id="res-phone" 
+                                className="mt-1"
+                                value={resourceForm.phone}
+                                onChange={(e) => setResourceForm({...resourceForm, phone: e.target.value})}
+                              />
                             </div>
 
                             <div>
-                              <Label>Type de ressources</Label>
-                              <div className="grid grid-cols-1 md:grid-cols-2 gap-3 mt-3">
-                                <div className="flex items-start space-x-3">
-                                  <Checkbox id="books" />
-                                  <Label htmlFor="books" className="font-normal">Livres et publications</Label>
-                                </div>
-                                <div className="flex items-start space-x-3">
-                                  <Checkbox id="materials" />
-                                  <Label htmlFor="materials" className="font-normal">Matériel d'évangélisation</Label>
-                                </div>
-                                <div className="flex items-start space-x-3">
-                                  <Checkbox id="spaces" />
-                                  <Label htmlFor="spaces" className="font-normal">Espaces pour réunions</Label>
-                                </div>
-                                <div className="flex items-start space-x-3">
-                                  <Checkbox id="contacts" />
-                                  <Label htmlFor="contacts" className="font-normal">Contacts et réseaux</Label>
-                                </div>
-                                <div className="flex items-start space-x-3">
-                                  <Checkbox id="skills" />
-                                  <Label htmlFor="skills" className="font-normal">Compétences professionnelles</Label>
-                                </div>
-                                <div className="flex items-start space-x-3">
-                                  <Checkbox id="other-resource" />
-                                  <Label htmlFor="other-resource" className="font-normal">Autres</Label>
-                                </div>
-                              </div>
+                              <Label htmlFor="res-type">Type de ressource</Label>
+                              <Input 
+                                id="res-type" 
+                                placeholder="Ex: Livres, Matériel, Espace de réunion..."
+                                className="mt-1"
+                                value={resourceForm.resource_type}
+                                onChange={(e) => setResourceForm({...resourceForm, resource_type: e.target.value})}
+                              />
                             </div>
 
                             <div>
-                              <Label htmlFor="res-details">Détails</Label>
+                              <Label htmlFor="res-details">Description</Label>
                               <Textarea 
                                 id="res-details" 
                                 placeholder="Décrivez les ressources que vous pouvez partager et comment elles pourraient soutenir le ministère"
                                 className="mt-1"
                                 rows={4}
+                                value={resourceForm.description}
+                                onChange={(e) => setResourceForm({...resourceForm, description: e.target.value})}
                               />
+                            </div>
+
+                            <div className="flex items-start space-x-3">
+                              <Checkbox 
+                                id="res-recurring"
+                                checked={resourceForm.is_recurring}
+                                onCheckedChange={(checked) => setResourceForm({...resourceForm, is_recurring: checked as boolean})}
+                              />
+                              <Label htmlFor="res-recurring" className="font-normal">
+                                Je peux offrir cette ressource de manière récurrente
+                              </Label>
                             </div>
 
                             <Button 
@@ -340,7 +478,7 @@ const PrierAvecNous = () => {
                         </li>
                         <li className="flex items-start gap-2">
                           <span className="text-gbuss-blue">•</span>
-                          <span>Pour la sagesse dans la planification des activités 2023-2024.</span>
+                          <span>Pour la sagesse dans la planification des activités.</span>
                         </li>
                         <li className="flex items-start gap-2">
                           <span className="text-gbuss-blue">•</span>
@@ -348,43 +486,31 @@ const PrierAvecNous = () => {
                         </li>
                         <li className="flex items-start gap-2">
                           <span className="text-gbuss-blue">•</span>
-                          <span>Pour nos staffs qui se consacrent à plein temps au ministère.</span>
+                          <span>Pour le financement des projets missionnaires.</span>
                         </li>
                       </ul>
                     </div>
 
                     <div className="bg-gbuss-light p-4 rounded-md">
                       <h3 className="font-semibold mb-2 flex items-center gap-2">
-                        <Calendar className="h-5 w-5 text-gbuss-blue" />
-                        Événements de prière
+                        <Calendar className="h-4 w-4" />
+                        Prochaine réunion de prière
                       </h3>
-                      <ul className="space-y-2 text-sm">
-                        <li>
-                          <p className="font-medium">Nuit de prière nationale</p>
-                          <p className="text-gray-600">25 novembre 2023, 20h-00h</p>
-                        </li>
-                        <li>
-                          <p className="font-medium">Semaine de prière pour les campus</p>
-                          <p className="text-gray-600">5-11 janvier 2024</p>
-                        </li>
-                        <li>
-                          <p className="font-medium">Réunion zoom des intercesseurs</p>
-                          <p className="text-gray-600">Chaque premier lundi du mois, 19h</p>
-                        </li>
-                      </ul>
+                      <p className="text-sm text-gray-600">
+                        Rejoignez-nous chaque premier samedi du mois pour un temps de prière collective en ligne.
+                      </p>
                     </div>
                   </CardContent>
                 </Card>
 
                 <div className="mt-6">
-                  <h3 className="font-semibold mb-3">Témoignage</h3>
-                  <div className="bg-white p-4 border rounded-md">
-                    <p className="text-sm italic text-gray-600">
-                      "Quand nous avons commencé à prier pour notre université, nous étions seulement 3 étudiants.
-                      Après six mois de prière fidèle, nous avons vu 15 nouveaux étudiants rejoindre notre groupe
-                      biblique. La prière a vraiment ouvert des portes!"
-                    </p>
-                    <p className="text-right text-sm font-medium mt-2">— Moussa K., Université de Dakar</p>
+                  <h3 className="font-semibold mb-3">Des questions?</h3>
+                  <p className="text-sm text-gray-600 mb-3">
+                    Pour toute question sur les engagements ou pour des informations supplémentaires:
+                  </p>
+                  <div className="text-sm">
+                    <p>Email: <span className="text-gbuss-green">engagement@gbuss.org</span></p>
+                    <p>Téléphone: <span className="text-gbuss-green">+221 77 XXX XX XX</span></p>
                   </div>
                 </div>
               </div>
@@ -396,24 +522,38 @@ const PrierAvecNous = () => {
   );
 };
 
-const Confirmation = ({ setShowConfirmation }: { setShowConfirmation: (value: boolean) => void }) => {
+const Confirmation = ({ 
+  type, 
+  setShowConfirmation 
+}: { 
+  type: 'prayer' | 'volunteer' | 'resources';
+  setShowConfirmation: (value: boolean) => void;
+}) => {
+  const messages = {
+    prayer: {
+      title: "Merci pour votre engagement de prière!",
+      message: "Votre soutien dans la prière est précieux pour notre mission. Vous recevrez bientôt des nouvelles de notre mouvement."
+    },
+    volunteer: {
+      title: "Merci pour votre candidature!",
+      message: "Nous avons bien reçu votre demande de bénévolat. Notre équipe vous contactera prochainement pour discuter des opportunités."
+    },
+    resources: {
+      title: "Merci pour votre générosité!",
+      message: "Votre contribution en ressources aidera à développer notre ministère. Nous vous contacterons pour organiser les détails."
+    }
+  };
+
   return (
     <div className="max-w-2xl mx-auto text-center">
       <div className="bg-white p-8 rounded-lg shadow-md">
         <div className="flex justify-center mb-6">
-          <div className="rounded-full bg-blue-100 p-3">
-            <CheckCircle className="h-12 w-12 text-blue-600" />
+          <div className="rounded-full bg-green-100 p-3">
+            <CheckCircle className="h-12 w-12 text-green-600" />
           </div>
         </div>
-        <h2 className="text-2xl font-bold text-gbuss-blue mb-4">Merci pour votre engagement!</h2>
-        <p className="text-lg mb-6">
-          Votre soutien spirituel est précieux pour le ministère du GBUSS.
-          Une confirmation a été envoyée à votre adresse email avec plus d'informations.
-        </p>
-        <p className="text-gray-600 mb-6">
-          "Ne vous inquiétez de rien; mais en toutes choses, par la prière et la supplication, 
-          avec des actions de grâces, faites connaître vos demandes à Dieu." - Philippiens 4:6
-        </p>
+        <h2 className="text-2xl font-bold text-gbuss-blue mb-4">{messages[type].title}</h2>
+        <p className="text-lg mb-6">{messages[type].message}</p>
         <Button 
           onClick={() => setShowConfirmation(false)} 
           className="bg-gbuss-blue hover:bg-gbuss-blue/90"
